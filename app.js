@@ -1,4 +1,4 @@
-
+var fs = require('fs');
 
 function BasicCard(front,back) {
 	this.front = front;
@@ -7,12 +7,39 @@ function BasicCard(front,back) {
 }
 
 
+BasicCard.prototype.print = function() {
+	console.log('BasicCard');
+	console.log(' front: ' + this.front);
+	console.log(' back: ' + this.back);
+}
 
 function ClozeCard(text, cloze) {
 	this.fullText = text;
 	this.cloze = cloze;
+	this.partial = this.buildPartial();
+	return this;
+}
 
-	//build partial by substracting cloze from text
+ClozeCard.prototype.getFullText = function() {
+	return this.fullText;
+}
+
+ClozeCard.prototype.getPartial = function() {
+	return this.partial;
+}
+
+ClozeCard.prototype.getCloze = function() {
+	return this.cloze;
+}
+
+ClozeCard.prototype.getFullText = function() {
+	return this.fullText;
+}
+
+ClozeCard.prototype.buildPartial = function() {
+	var text = this.fullText;
+	var cloze = this.cloze;
+//build partial by substracting cloze from text
 	var position = text.indexOf(cloze);
         if(position == -1) {
 		throw "Invalid cloze " + cloze + " in sentence " + text
@@ -21,27 +48,43 @@ function ClozeCard(text, cloze) {
 	if(position == 0) {
 		partial = " ..." + text.substr(cloze.length, text.length);
 	} else {
-		
+		partial =text.substr(0, position) + " ..." + text.substr(position + cloze.length, text.length);
 	}
+	return partial;
+}
 
-	this.partial = partial;
-	return this;
+ClozeCard.prototype.print = function() {
+	console.log('ClozeCard');
+	console.log(' partial: ' + this.partial);
+	console.log(' cloze: ' + this.cloze);
+	console.log(' fullText: ' + this.fullText);
 }
 
 
+function loadCards(filename) {
+	var cards = [];
+	var data = fs.readFileSync(filename, 'utf8');
+	var lines = data.split("\n");
+	for(var i = 1;i<lines.length;i++) {
+		var fields = lines[i].split(",");
+		if(fields[0] == 'Basic') {
+			cards.push(new BasicCard(fields[1], fields[2]))
+		} else {
+			cards.push(new ClozeCard(fields[1], fields[2]))
+		}
+	}
+	return cards;
+} 
 
-//test constructor
+//test cards
+var cards = loadCards('cards.csv')
+for(var i = 0;i< cards.length;i++) {
+	cards[i].print();
+}
 
-var firstPresidentCloze = new ClozeCard(
-    "George Washington was the first president of the United States.", "George Washington");
-
-// "George Washington"
-console.log(firstPresidentCloze.cloze); 
-
-// " ... was the first president of the United States."
-console.log(firstPresidentCloze.partial); 
-
-// "George Washington was the first president of the United States."
-console.log(firstPresidentCloze.fullText);
-
-
+try {
+	// Should throw or log an error because "oops" doesn't appear in "This doesn't work"
+	var brokenCloze = new ClozeCard("This doesn't work", "oops"); 
+} catch(e) {
+	console.log("Caught error: " +e)
+}

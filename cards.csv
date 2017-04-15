@@ -1,0 +1,5 @@
+type,question,answer
+Basic,Who was the first president of the United States?,George Washington
+Basic,What is the name of the longest river ?,Amazon
+Cloze,George Washington was the first president of the United States.,George Washington
+Cloze,Amazon is the longest river.,Amazon

@@ -1,6 +1,10 @@
 var fs = require('fs');
 
 function BasicCard(front,back) {
+	//safe constructor
+ 	if(!(this instanceof BasicCard)) {
+    	return new BasicCard(front, back);
+  	}
 	this.front = front;
 	this.back = back;
 	return this;
@@ -14,6 +18,10 @@ BasicCard.prototype.print = function() {
 }
 
 function ClozeCard(text, cloze) {
+	//safe constructor
+ 	if(!(this instanceof ClozeCard)) {
+    	return new ClozeCard(text, cloze);
+  	}
 	this.fullText = text;
 	this.cloze = cloze;
 	this.partial = this.buildPartial();
@@ -76,12 +84,13 @@ function loadCards(filename) {
 	return cards;
 } 
 
-//test cards
+//loads cards and print card properties
 var cards = loadCards('cards.csv')
 for(var i = 0;i< cards.length;i++) {
 	cards[i].print();
 }
 
+//test error case
 try {
 	// Should throw or log an error because "oops" doesn't appear in "This doesn't work"
 	var brokenCloze = new ClozeCard("This doesn't work", "oops"); 

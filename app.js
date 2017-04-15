@@ -28,10 +28,6 @@ function ClozeCard(text, cloze) {
 	return this;
 }
 
-ClozeCard.prototype.getFullText = function() {
-	return this.fullText;
-}
-
 ClozeCard.prototype.getPartial = function() {
 	return this.partial;
 }
